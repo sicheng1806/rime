@@ -1,0 +1,12 @@
+var:
+  last_build_time: 1687590031
+  option:
+    full_shape: false
+    simplification: true
+  previously_selected_schema: test
+  schema_access_time:
+    double_pinyin_mspy: 1687581397
+    hello: 1687530276
+    luna_pinyin: 1687526528
+    test: 1687586028
+    welcome: 1687504325

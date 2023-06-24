@@ -1,0 +1,10 @@
+# Rime schema
+# encoding: utf-8
+#
+# hello Rime
+#
+
+schema:
+  schema_id: hello
+  name: 大家好
+  version: "1"

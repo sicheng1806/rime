@@ -1,0 +1,43 @@
+__build_info:
+  rime_version: 1.7.3
+  timestamps:
+    default: 1635007600
+    default.custom: 1687504292
+    key_bindings: 1635007600
+    key_bindings.custom: 0
+    punctuation: 1635007600
+    punctuation.custom: 0
+    welcome.custom: 0
+    welcome.schema: 1687505254
+engine:
+  processors:
+    - speller
+    - punctuator
+    - selector
+    - express_editor
+  segmentors:
+    - abc_segmentor
+    - punct_segmentor
+  translators:
+    - script_translator
+    - punct_translator
+menu:
+  page_size: 5
+punctuator:
+  full_shape:
+    "!": "壹"
+    ")": "零"
+    Y: ["月", "元"]
+  half_shape:
+    "!": "壹"
+    ")": "零"
+    Y: ["月", "元"]
+schema:
+  name: "键盘式输入法"
+  schema_id: welcome
+  version: 2
+switches:
+  - name: full_shape
+    states: ["小写", "大写"]
+translator:
+  dictionary: welcome

@@ -1,0 +1,41 @@
+# Rime shcema
+# encoding: utf-8
+#
+# 键盘式输入法
+#
+
+schema:
+  schema_id:  welcome
+  name: 键盘式输入法
+  version:  "4"
+
+switches:
+  - name: full_shape
+    states: [ 小写, 大写]
+
+engine:
+  processors:
+    - speller
+    - punctuator
+    - selector
+    - express_editor
+  segmentors:
+    - abc_segmentor
+    - punct_segmentor
+  translators:
+    - script_translator
+    - punct_translator
+
+punctuator:
+  half_shape: &symtable
+    "!" : 壹
+    ")" : 零
+    "Y" : [ 月, 元]
+  full_shape: *symtable
+
+translator:
+  dictionary: welcome
+
+speller:
+  algebra:
+    - 'abbrev/'

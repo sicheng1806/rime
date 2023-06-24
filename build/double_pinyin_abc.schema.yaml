@@ -1,0 +1,52 @@
+__build_info:
+  rime_version: 1.7.3
+  timestamps:
+    default: 1635007600
+    default.custom: 1687505527
+    double_pinyin_abc.custom: 0
+    double_pinyin_abc.schema: 1687506020
+    key_bindings: 1635007600
+    key_bindings.custom: 0
+    punctuation: 1635007600
+    punctuation.custom: 0
+engine:
+  filters:
+    - simplifier
+    - uniquifier
+  processors:
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - echo_translator
+    - punct_translator
+    - script_translator
+    - reverse_lookup_translator
+menu:
+  page_size: 5
+schema:
+  description: |
+    明月拼音，兼容智能ABC双拼方案
+
+  name: "智能拼音双拼"
+  schema_id: double_pinyin_abc
+  version: 0.9
+switches:
+  - name: ascii_mode
+    reset: 1
+    states: ["中文", "西文"]
+  - name: full_shape
+    staturs: ["半角", "全角"]
+  - name: simplification
+    states: [traditional, simplified]

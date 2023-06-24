@@ -1,0 +1,164 @@
+# Rime schema
+# encoding: utf-8
+# 这个文档用于实现自己的功能，作准备。基于微软双拼。
+# 添加的使用功能：
+# 1、场景式输入功能：定制学术词典，emoji模式：通过特定命令启用
+# 2、命令输入：场景切换命令，日期命令（%%:cmd-arg1-arg2-arg3)
+#
+# step： 
+# 1、标注功能，复习知识
+# 2、姓名，专有名词的管理功能
+# 3、emoji的快速输入功能
+# 4、智能命令
+# 5、通过添加条件智能匹配
+
+schema:
+  schema_id: test
+  name: 测试
+  version: "0"
+  author:
+    - sicheng
+  description: |
+    基于微软双拼
+  dependencies:
+    - stroke
+
+switches:
+  - name: ascii_mode
+    reset: 1
+    states: [ 中文, 西文 ]
+  - name: full_shape
+    states: [ 半角, 全角 ]
+  - name: simplification
+    states: [ 漢字, 汉字 ]
+  - name: ascii_punct
+    states: [ 。，, ．， ]
+  - name: test
+    states: [ 一, 1 ]
+
+engine:
+  processors:
+    - ascii_composer  # 西文模式支持（想利用西文模式设计命令，这样的话就不能让西文字符直接上屏，而是可以选择命令，但是又想利用西文模式的切换按钮
+    - recognizer      # 识别一些特殊文本
+    - key_binder      # 基于条件的快捷键设定
+    - speller         # 基本的字母输入，核心
+    - punctuator      # 符号收入，用于符号转换
+    - selector        # 候选词选择功能
+    - navigator       # 候选词翻页功能
+    - express_editor  # 处理空格，回车这些基础的上屏功能
+  segmentors:
+    - ascii_segmentor     # 西文模式支持，没有也行
+    - matcher             # 将特殊文本打上标记
+    - abc_segmentor       # 将基本的字母串打上标记
+    - punct_segmentor     # 将符号打上符号标记
+    - fallback_segmentor  # 标记没有标记的段落，不知道其实际作用
+  translators: 
+    - punct_translator    # 根据符号表，翻译符号，一般为标点
+    - reverse_lookup_translator # 
+    - script_translator   # 拼音输入法的主流翻译器，将字母串按规则选择
+  filters:
+    - simplifier        # 用于实现简化功能
+    - uniquifier        # 用于将简化后可能出现候选词重复的现象去除
+    - lua_filter@
+
+speller:  # 按双拼方案转化为全拼处理
+  alphabet: zyxwvutsrqponmlkjihgfedcba;
+  initials: zyxwvutsrqponmlkjihgfedcba
+  delimiter: " '"
+  algebra:
+    - erase/^xx$/
+    - derive/^([jqxy])u$/$1v/
+    - derive/^([aoe].*)$/o$1/
+    - xform/^([ae])(.*)$/$1$1$2/
+    - xform/iu$/Q/
+    - xform/[iu]a$/W/
+    - xform/er$|[uv]an$/R/
+    - xform/[uv]e$/T/
+    - xform/v$|uai$/Y/
+    - xform/^sh/U/
+    - xform/^ch/I/
+    - xform/^zh/V/
+    - xform/uo$/O/
+    - xform/[uv]n$/P/
+    - xform/i?ong$/S/
+    - xform/[iu]ang$/D/
+    - xform/(.)en$/$1F/
+    - xform/(.)eng$/$1G/
+    - xform/(.)ang$/$1H/
+    - xform/ian$/M/
+    - xform/(.)an$/$1J/
+    - xform/iao$/C/
+    - xform/(.)ao$/$1K/
+    - xform/(.)ai$/$1L/
+    - xform/(.)ei$/$1Z/
+    - xform/ie$/X/
+    - xform/ui$/V/
+    - derive/T$/V/
+    - xform/(.)ou$/$1B/
+    - xform/in$/N/
+    - xform/ing$/;/
+    - xlit/QWRTYUIOPSDFGHMJCKLZXVBN/qwrtyuiopsdfghmjcklzxvbn/
+    #- abbrev/^(.).+$/$1/
+
+translator: # 将标记好的字母串（以转化为全拼）翻译为候选项
+  dictionary: luna_pinyin
+  prism: double_pinyin_mspy
+  preedit_format: # 这一部分是将上一步转换为全拼的字符串，展示出来。没有的话，会按输入的字符展示
+    - xform/([aoe])(\w)/0$2/
+    - xform/([bpmnljqxy])n/$1in/
+    - xform/(\w)g/$1eng/
+    - xform/(\w)q/$1iu/
+    - xform/([gkhvuirzcs])w/$1ua/
+    - xform/(\w)w/$1ia/
+    - xform/([dtnlgkhjqxyvuirzcs])r/$1uan/
+    - xform/0r/er/
+    - xform/([dtgkhvuirzcs])v/$1ui/
+    - xform/(\w)v/$1ve/
+    - xform/(\w)t/$1ve/
+    - xform/([gkhvuirzcs])y/$1uai/
+    - xform/(\w)y/$1v/
+    - xform/([dtnlgkhvuirzcs])o/$1uo/
+    - xform/(\w)p/$1un/
+    - xform/([jqx])s/$1iong/
+    - xform/(\w)s/$1ong/
+    - xform/([jqxnl])d/$1iang/
+    - xform/(\w)d/$1uang/
+    - xform/(\w)f/$1en/
+    - xform/(\w)h/$1ang/
+    - xform/(\w)j/$1an/
+    - xform/(\w)k/$1ao/
+    - xform/(\w)l/$1ai/
+    - xform/(\w)z/$1ei/
+    - xform/(\w)x/$1ie/
+    - xform/(\w)c/$1iao/
+    - xform/(\w)b/$1ou/
+    - xform/(\w)m/$1ian/
+    - xform/(\w);/$1ing/
+    - xform/0(\w)/$1/
+    - "xform/(^|[ '])v/$1zh/"
+    - "xform/(^|[ '])i/$1ch/"
+    - "xform/(^|[ '])u/$1sh/"
+    - xform/([jqxy])v/$1u/
+    - xform/([nl])v/$1ü/
+
+reverse_lookup: # 不知道用来干嘛
+  dictionary: stroke
+  enable_completion: true
+  prefix: "`"
+  suffix: "'"
+  tips: 〔筆畫〕
+  preedit_format:
+    - xlit/hspnz/一丨丿丶乙/
+  comment_format:
+    - xform/([nl])v/$1ü/
+
+punctuator: # 按默认表转换符号
+  import_preset: default
+
+key_binder: # 按默认值设置快捷键
+  import_preset: default
+
+recognizer: # 按默认值设置特殊识别码，不知道有什么用。
+  import_preset: default
+  patterns:
+    reverse_lookup: "`[a-z]*'?$"
